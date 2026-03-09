@@ -295,6 +295,67 @@
       pointer-events: none;
     }
 
+    /* ブログリスト */
+    .blog-list {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-bottom: 20px;
+    }
+
+    .blog-card {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 16px 20px;
+      border-radius: 6px;
+      text-decoration: none;
+      border: 1px solid rgba(160, 100, 20, 0.15);
+      background: rgba(20, 12, 4, 0.6);
+      transition: all 0.3s;
+    }
+
+    .blog-card:hover {
+      border-color: rgba(200, 130, 30, 0.4);
+      background: rgba(30, 18, 6, 0.9);
+      transform: translateX(4px);
+    }
+
+    .blog-date {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.65rem;
+      color: #6a4a28;
+      letter-spacing: 2px;
+      white-space: nowrap;
+    }
+
+    .blog-title {
+      flex: 1;
+      font-size: 0.92rem;
+      color: #c09060;
+      line-height: 1.5;
+    }
+
+    .blog-arrow {
+      color: #6a4a28;
+      font-size: 0.9rem;
+      transition: color 0.2s;
+    }
+
+    .blog-card:hover .blog-arrow { color: #e0a840; }
+
+    .all-posts-link {
+      display: inline-block;
+      font-family: 'Orbitron', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      color: #6a4a28;
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    .all-posts-link:hover { color: #e0a840; }
+
     /* フッター */
     footer {
       text-align: center;
@@ -366,6 +427,29 @@
       </div>
 
     </div>
+  </section>
+
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-gem"></div>
+    <div class="divider-line"></div>
+  </div>
+
+  <section>
+    <p class="section-label">// TRANSMISSION LOG</p>
+    <h2 class="section-title">Blog</h2>
+
+    <div class="blog-list">
+
+      <a class="blog-card" href="./blog/posts/2026-03-09.html">
+        <span class="blog-date">2026.03.09</span>
+        <span class="blog-title">AIチームを組んでみた —— ゲーム・ツール・サイトを1日で作った話</span>
+        <span class="blog-arrow">→</span>
+      </a>
+
+    </div>
+
+    <a class="all-posts-link" href="./blog/">すべての記事を見る →</a>
   </section>
 
   <div class="divider">
