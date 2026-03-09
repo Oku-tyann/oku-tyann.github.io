@@ -10,14 +10,14 @@
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      background: #000;
-      color: #e8e0c8;
+      background: #0a0600;
+      color: #d4b896;
       font-family: 'Noto Sans JP', sans-serif;
       overflow-x: hidden;
     }
 
-    /* 星空背景 */
-    #stars {
+    /* キャンバス背景 */
+    #bg-canvas {
       position: fixed;
       top: 0; left: 0;
       width: 100%; height: 100%;
@@ -25,25 +25,12 @@
       pointer-events: none;
     }
 
-    .star {
-      position: absolute;
-      background: #fff;
-      border-radius: 50%;
-      animation: twinkle var(--d) infinite alternate;
-    }
-
-    @keyframes twinkle {
-      from { opacity: 0.2; }
-      to { opacity: 1; }
-    }
-
-    /* コンテンツ全体 */
     .content {
       position: relative;
       z-index: 1;
     }
 
-    /* ヒーローセクション */
+    /* ヒーロー */
     .hero {
       height: 100vh;
       display: flex;
@@ -52,193 +39,233 @@
       justify-content: center;
       text-align: center;
       padding: 20px;
+      position: relative;
+    }
+
+    /* 中心からの放射グロー */
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px;
+      height: 600px;
+      background: radial-gradient(ellipse, rgba(200, 120, 10, 0.15) 0%, rgba(160, 80, 5, 0.08) 40%, transparent 70%);
+      pointer-events: none;
     }
 
     .crawl-intro {
       font-family: 'Orbitron', monospace;
-      font-size: 0.85rem;
+      font-size: 0.75rem;
       letter-spacing: 6px;
-      color: #ffe81f;
-      margin-bottom: 24px;
+      color: #a07040;
+      margin-bottom: 28px;
       opacity: 0;
-      animation: fadeIn 1s ease 0.5s forwards;
+      animation: fadeIn 1.5s ease 0.5s forwards;
     }
 
     .hero-title {
       font-family: 'Orbitron', monospace;
-      font-size: clamp(2rem, 6vw, 5rem);
+      font-size: clamp(2.5rem, 7vw, 6rem);
       font-weight: 900;
-      color: #ffe81f;
-      text-shadow: 0 0 30px rgba(255, 232, 31, 0.5), 0 0 60px rgba(255, 232, 31, 0.2);
-      letter-spacing: 4px;
+      color: #f0c060;
+      text-shadow:
+        0 0 20px rgba(220, 140, 20, 0.8),
+        0 0 60px rgba(180, 100, 10, 0.4),
+        0 0 120px rgba(140, 70, 5, 0.2);
+      letter-spacing: 6px;
       opacity: 0;
-      animation: fadeIn 1s ease 1s forwards;
+      animation: fadeIn 1.5s ease 1s forwards;
     }
 
     .hero-sub {
-      font-size: 1.1rem;
-      color: #8ab4d4;
-      margin-top: 16px;
-      letter-spacing: 2px;
+      font-size: 0.95rem;
+      color: #8a6a4a;
+      margin-top: 20px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
       opacity: 0;
-      animation: fadeIn 1s ease 1.5s forwards;
+      animation: fadeIn 1.5s ease 1.6s forwards;
     }
 
     .scroll-hint {
       position: absolute;
       bottom: 40px;
-      font-size: 0.8rem;
-      color: #555;
-      letter-spacing: 3px;
-      animation: bounce 2s infinite;
+      font-size: 0.72rem;
+      color: #4a3520;
+      letter-spacing: 4px;
+      animation: pulse 2.5s infinite;
     }
 
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(8px); }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.4; transform: translateY(0); }
+      50% { opacity: 1; transform: translateY(6px); }
     }
 
     @keyframes fadeIn {
       to { opacity: 1; }
     }
 
-    /* ライトセーバー区切り線 */
-    .saber-divider {
+    /* 区切り線 */
+    .divider {
       display: flex;
       align-items: center;
-      gap: 16px;
+      gap: 12px;
       padding: 0 40px;
-      margin: 60px auto;
+      margin: 40px auto;
       max-width: 900px;
     }
 
-    .saber-line {
+    .divider-line {
       flex: 1;
-      height: 2px;
-      background: linear-gradient(90deg, transparent, #4fc3f7, transparent);
-      box-shadow: 0 0 8px #4fc3f7;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(180, 110, 20, 0.6), transparent);
     }
 
-    .saber-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: #4fc3f7;
-      box-shadow: 0 0 12px #4fc3f7;
+    .divider-gem {
+      width: 6px; height: 6px;
+      background: #c88020;
+      transform: rotate(45deg);
+      box-shadow: 0 0 10px rgba(200, 128, 32, 0.8), 0 0 20px rgba(200, 128, 32, 0.4);
     }
 
-    /* セクション共通 */
+    /* セクション */
     section {
       max-width: 900px;
       margin: 0 auto;
-      padding: 60px 24px;
+      padding: 40px 24px 60px;
     }
 
     .section-label {
       font-family: 'Orbitron', monospace;
-      font-size: 0.7rem;
+      font-size: 0.65rem;
       letter-spacing: 5px;
-      color: #ffe81f;
-      margin-bottom: 8px;
+      color: #7a5530;
+      margin-bottom: 6px;
     }
 
     .section-title {
       font-family: 'Orbitron', monospace;
-      font-size: 1.8rem;
+      font-size: 1.6rem;
       font-weight: 700;
-      color: #fff;
-      margin-bottom: 40px;
+      color: #e8c070;
+      margin-bottom: 36px;
+      text-shadow: 0 0 20px rgba(220, 160, 60, 0.3);
     }
 
     /* プロジェクトカード */
     .projects-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 24px;
+      gap: 20px;
     }
 
     .project-card {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(79, 195, 247, 0.2);
-      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(30, 18, 6, 0.95), rgba(20, 12, 4, 0.98));
+      border: 1px solid rgba(160, 100, 20, 0.25);
+      border-radius: 8px;
       padding: 28px;
-      transition: all 0.3s ease;
+      transition: all 0.4s ease;
       position: relative;
       overflow: hidden;
     }
 
+    /* カード上部のグロー */
     .project-card::before {
       content: '';
       position: absolute;
+      top: -1px; left: 20px; right: 20px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(200, 128, 32, 0.6), transparent);
+    }
+
+    /* カード背景の光 */
+    .project-card::after {
+      content: '';
+      position: absolute;
       top: 0; left: 0;
-      width: 3px; height: 100%;
-      background: linear-gradient(180deg, #4fc3f7, #ffe81f);
-      box-shadow: 0 0 12px #4fc3f7;
+      width: 100%; height: 100%;
+      background: radial-gradient(ellipse at 50% 0%, rgba(180, 100, 10, 0.06) 0%, transparent 60%);
+      pointer-events: none;
     }
 
     .project-card:hover {
-      border-color: rgba(79, 195, 247, 0.6);
-      background: rgba(79, 195, 247, 0.05);
-      transform: translateY(-4px);
-      box-shadow: 0 8px 32px rgba(79, 195, 247, 0.1);
+      border-color: rgba(200, 130, 30, 0.5);
+      background: linear-gradient(135deg, rgba(40, 24, 8, 0.98), rgba(28, 16, 5, 1));
+      transform: translateY(-5px);
+      box-shadow:
+        0 10px 40px rgba(0,0,0,0.6),
+        0 0 30px rgba(180, 100, 10, 0.1),
+        inset 0 1px 0 rgba(200, 128, 32, 0.2);
     }
 
     .project-emoji {
-      font-size: 2.2rem;
-      margin-bottom: 12px;
+      font-size: 2rem;
+      margin-bottom: 14px;
       display: block;
+      filter: drop-shadow(0 0 8px rgba(200, 150, 50, 0.4));
     }
 
     .project-name {
       font-family: 'Orbitron', monospace;
-      font-size: 1rem;
+      font-size: 0.95rem;
       font-weight: 700;
-      color: #ffe81f;
-      margin-bottom: 8px;
+      color: #e0a840;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+      text-shadow: 0 0 12px rgba(200, 140, 40, 0.4);
     }
 
     .project-desc {
-      font-size: 0.9rem;
-      color: #aaa;
-      line-height: 1.7;
-      margin-bottom: 16px;
+      font-size: 0.88rem;
+      color: #8a7060;
+      line-height: 1.8;
+      margin-bottom: 18px;
     }
 
     .project-tags {
       display: flex;
       flex-wrap: wrap;
       gap: 6px;
+      margin-bottom: 4px;
     }
 
     .tag {
-      font-size: 0.72rem;
+      font-size: 0.7rem;
       padding: 3px 10px;
-      border-radius: 20px;
-      border: 1px solid rgba(79, 195, 247, 0.3);
-      color: #4fc3f7;
+      border-radius: 2px;
+      border: 1px solid rgba(160, 100, 20, 0.35);
+      color: #9a7040;
       letter-spacing: 0.5px;
+      background: rgba(160, 100, 20, 0.05);
     }
 
     .project-link {
       display: inline-block;
-      margin-top: 16px;
-      padding: 8px 18px;
-      border-radius: 6px;
-      border: 1px solid #ffe81f;
-      color: #ffe81f;
-      font-size: 0.82rem;
+      margin-top: 18px;
+      padding: 8px 20px;
+      border-radius: 3px;
+      border: 1px solid rgba(200, 140, 30, 0.5);
+      color: #d4a030;
+      font-size: 0.78rem;
+      font-family: 'Orbitron', monospace;
       text-decoration: none;
-      letter-spacing: 1px;
-      transition: all 0.2s;
+      letter-spacing: 2px;
+      transition: all 0.3s;
+      background: rgba(160, 100, 10, 0.05);
     }
 
     .project-link:hover {
-      background: #ffe81f;
-      color: #000;
+      background: rgba(200, 130, 20, 0.15);
+      border-color: rgba(220, 160, 40, 0.8);
+      color: #f0c050;
+      box-shadow: 0 0 16px rgba(180, 110, 10, 0.3);
     }
 
     .project-link.disabled {
-      border-color: #444;
-      color: #555;
+      border-color: rgba(80, 60, 40, 0.3);
+      color: #4a3820;
       cursor: default;
       pointer-events: none;
     }
@@ -246,36 +273,36 @@
     /* フッター */
     footer {
       text-align: center;
-      padding: 40px;
-      color: #333;
-      font-size: 0.8rem;
+      padding: 48px 20px;
+      color: #3a2810;
+      font-size: 0.75rem;
       letter-spacing: 2px;
+      border-top: 1px solid rgba(100, 60, 10, 0.15);
     }
 
-    footer span {
-      color: #ffe81f;
+    footer em {
+      font-style: normal;
+      color: #7a5530;
     }
   </style>
 </head>
 <body>
 
-<canvas id="stars"></canvas>
+<canvas id="bg-canvas"></canvas>
 
 <div class="content">
 
-  <!-- ヒーロー -->
   <div class="hero">
     <p class="crawl-intro">A LONG TIME AGO IN A GALAXY FAR, FAR AWAY...</p>
     <h1 class="hero-title">OKU-TYANN</h1>
-    <p class="hero-sub">Creator / Explorer / Builder</p>
-    <p class="scroll-hint">▼ SCROLL ▼</p>
+    <p class="hero-sub">Creator · Explorer · Builder</p>
+    <p class="scroll-hint">▼ &nbsp; SCROLL &nbsp; ▼</p>
   </div>
 
-  <!-- プロジェクト -->
-  <div class="saber-divider">
-    <div class="saber-line"></div>
-    <div class="saber-dot"></div>
-    <div class="saber-line"></div>
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-gem"></div>
+    <div class="divider-line"></div>
   </div>
 
   <section>
@@ -312,45 +339,117 @@
     </div>
   </section>
 
-  <div class="saber-divider">
-    <div class="saber-line"></div>
-    <div class="saber-dot"></div>
-    <div class="saber-line"></div>
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-gem"></div>
+    <div class="divider-line"></div>
   </div>
 
   <footer>
-    <p>© 2026 <span>OKU-TYANN</span> · Built with Claude Code · May the Force be with you.</p>
+    <p>© 2026 &nbsp;<em>OKU-TYANN</em>&nbsp; · Built with Claude Code · May the Force be with you.</p>
   </footer>
 
 </div>
 
 <script>
-  // 星を生成
-  const canvas = document.getElementById('stars');
+  const canvas = document.getElementById('bg-canvas');
   const ctx = canvas.getContext('2d');
 
+  let particles = [];
+  let W, H;
+
   function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    drawStars();
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+    initParticles();
   }
 
-  function drawStars() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    for (let i = 0; i < 250; i++) {
-      const x = Math.random() * canvas.width;
-      const y = Math.random() * canvas.height;
-      const r = Math.random() * 1.5;
-      const opacity = Math.random() * 0.8 + 0.2;
+  // パーティクル（火花）
+  function initParticles() {
+    particles = [];
+    const count = Math.floor(W * H / 8000);
+    for (let i = 0; i < count; i++) {
+      particles.push(createParticle(true));
+    }
+  }
+
+  function createParticle(random = false) {
+    const centerX = W / 2;
+    const centerY = H * 0.42;
+    const angle = Math.random() * Math.PI * 2;
+    const dist = random ? Math.random() * Math.max(W, H) * 0.7 : 0;
+    return {
+      x: random ? Math.random() * W : centerX,
+      y: random ? Math.random() * H : centerY,
+      vx: (Math.random() - 0.5) * 0.3,
+      vy: -(Math.random() * 0.4 + 0.1),
+      size: Math.random() * 1.5 + 0.3,
+      alpha: Math.random() * 0.6 + 0.1,
+      decay: Math.random() * 0.003 + 0.001,
+      color: Math.random() > 0.5
+        ? `rgba(${220 + Math.random()*35|0}, ${120 + Math.random()*60|0}, ${10 + Math.random()*30|0},`
+        : `rgba(${180 + Math.random()*40|0}, ${80 + Math.random()*40|0}, ${5},`,
+    };
+  }
+
+  function drawBackground() {
+    // 暗いベース
+    ctx.fillStyle = '#0a0600';
+    ctx.fillRect(0, 0, W, H);
+
+    // 中心グロー
+    const cx = W / 2, cy = H * 0.42;
+    const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, Math.min(W, H) * 0.55);
+    grad.addColorStop(0, 'rgba(180, 90, 8, 0.12)');
+    grad.addColorStop(0.4, 'rgba(120, 55, 5, 0.06)');
+    grad.addColorStop(1, 'rgba(0,0,0,0)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    drawBackground();
+
+    // 星（固定）
+    ctx.save();
+    for (let i = 0; i < 120; i++) {
+      // シード的に固定位置
+      const x = ((i * 137.508 * W) % W + W) % W;
+      const y = ((i * 97.3 * H) % H + H) % H;
+      const r = (i % 3 === 0) ? 0.8 : 0.4;
+      const a = 0.15 + (Math.sin(Date.now() * 0.001 + i) * 0.5 + 0.5) * 0.25;
       ctx.beginPath();
       ctx.arc(x, y, r, 0, Math.PI * 2);
-      ctx.fillStyle = `rgba(255,255,255,${opacity})`;
+      ctx.fillStyle = `rgba(220, 180, 120, ${a})`;
       ctx.fill();
     }
+    ctx.restore();
+
+    // パーティクル（火花）
+    for (let i = particles.length - 1; i >= 0; i--) {
+      const p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.alpha -= p.decay;
+
+      if (p.alpha <= 0) {
+        particles[i] = createParticle();
+        continue;
+      }
+
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fillStyle = p.color + p.alpha + ')';
+      ctx.fill();
+    }
+
+    requestAnimationFrame(animate);
   }
 
   window.addEventListener('resize', resize);
   resize();
+  animate();
 </script>
 
 </body>
