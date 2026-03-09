@@ -90,11 +90,16 @@
     }
 
     .hero-egg {
-      width: clamp(220px, 35vw, 420px);
-      margin-top: 36px;
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: clamp(300px, 50vw, 650px);
       opacity: 0;
       animation: fadeIn 2s ease 2s forwards;
-      filter: drop-shadow(0 0 40px rgba(180, 100, 10, 0.5)) drop-shadow(0 0 80px rgba(140, 70, 5, 0.25));
+      mask-image: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.9) 30%, rgba(0,0,0,0.3) 70%, transparent 100%);
+      -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.9) 30%, rgba(0,0,0,0.3) 70%, transparent 100%);
+      pointer-events: none;
     }
 
     .scroll-hint {
@@ -304,8 +309,8 @@
     <p class="crawl-intro">IN A WORLD THAT NEVER STOPS EVOLVING...</p>
     <h1 class="hero-title">OKU-TYANN</h1>
     <p class="hero-sub">Creator · Explorer · Builder</p>
-    <img class="hero-egg" src="./egg.png" alt="egg" />
     <p class="scroll-hint">▼ &nbsp; SCROLL &nbsp; ▼</p>
+    <img class="hero-egg" src="./egg.png" alt="" />
   </div>
 
   <div class="divider">
