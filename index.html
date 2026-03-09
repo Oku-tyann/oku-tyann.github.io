@@ -89,6 +89,14 @@
       animation: fadeIn 1.5s ease 1.6s forwards;
     }
 
+    .hero-egg {
+      width: clamp(220px, 35vw, 420px);
+      margin-top: 36px;
+      opacity: 0;
+      animation: fadeIn 2s ease 2s forwards;
+      filter: drop-shadow(0 0 40px rgba(180, 100, 10, 0.5)) drop-shadow(0 0 80px rgba(140, 70, 5, 0.25));
+    }
+
     .scroll-hint {
       position: absolute;
       bottom: 40px;
@@ -296,6 +304,7 @@
     <p class="crawl-intro">A LONG TIME AGO IN A GALAXY FAR, FAR AWAY...</p>
     <h1 class="hero-title">OKU-TYANN</h1>
     <p class="hero-sub">Creator · Explorer · Builder</p>
+    <img class="hero-egg" src="./egg.png" alt="egg" />
     <p class="scroll-hint">▼ &nbsp; SCROLL &nbsp; ▼</p>
   </div>
 
