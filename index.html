@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Oku-tyann's Universe</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Noto+Sans+JP:wght@300;400;700&display=swap');
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: #000;
+      color: #e8e0c8;
+      font-family: 'Noto Sans JP', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* 星空背景 */
+    #stars {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .star {
+      position: absolute;
+      background: #fff;
+      border-radius: 50%;
+      animation: twinkle var(--d) infinite alternate;
+    }
+
+    @keyframes twinkle {
+      from { opacity: 0.2; }
+      to { opacity: 1; }
+    }
+
+    /* コンテンツ全体 */
+    .content {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ヒーローセクション */
+    .hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .crawl-intro {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.85rem;
+      letter-spacing: 6px;
+      color: #ffe81f;
+      margin-bottom: 24px;
+      opacity: 0;
+      animation: fadeIn 1s ease 0.5s forwards;
+    }
+
+    .hero-title {
+      font-family: 'Orbitron', monospace;
+      font-size: clamp(2rem, 6vw, 5rem);
+      font-weight: 900;
+      color: #ffe81f;
+      text-shadow: 0 0 30px rgba(255, 232, 31, 0.5), 0 0 60px rgba(255, 232, 31, 0.2);
+      letter-spacing: 4px;
+      opacity: 0;
+      animation: fadeIn 1s ease 1s forwards;
+    }
+
+    .hero-sub {
+      font-size: 1.1rem;
+      color: #8ab4d4;
+      margin-top: 16px;
+      letter-spacing: 2px;
+      opacity: 0;
+      animation: fadeIn 1s ease 1.5s forwards;
+    }
+
+    .scroll-hint {
+      position: absolute;
+      bottom: 40px;
+      font-size: 0.8rem;
+      color: #555;
+      letter-spacing: 3px;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(8px); }
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
+    }
+
+    /* ライトセーバー区切り線 */
+    .saber-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 0 40px;
+      margin: 60px auto;
+      max-width: 900px;
+    }
+
+    .saber-line {
+      flex: 1;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #4fc3f7, transparent);
+      box-shadow: 0 0 8px #4fc3f7;
+    }
+
+    .saber-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #4fc3f7;
+      box-shadow: 0 0 12px #4fc3f7;
+    }
+
+    /* セクション共通 */
+    section {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 60px 24px;
+    }
+
+    .section-label {
+      font-family: 'Orbitron', monospace;
+      font-size: 0.7rem;
+      letter-spacing: 5px;
+      color: #ffe81f;
+      margin-bottom: 8px;
+    }
+
+    .section-title {
+      font-family: 'Orbitron', monospace;
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 40px;
+    }
+
+    /* プロジェクトカード */
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+
+    .project-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(79, 195, 247, 0.2);
+      border-radius: 12px;
+      padding: 28px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: linear-gradient(180deg, #4fc3f7, #ffe81f);
+      box-shadow: 0 0 12px #4fc3f7;
+    }
+
+    .project-card:hover {
+      border-color: rgba(79, 195, 247, 0.6);
+      background: rgba(79, 195, 247, 0.05);
+      transform: translateY(-4px);
+      box-shadow: 0 8px 32px rgba(79, 195, 247, 0.1);
+    }
+
+    .project-emoji {
+      font-size: 2.2rem;
+      margin-bottom: 12px;
+      display: block;
+    }
+
+    .project-name {
+      font-family: 'Orbitron', monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #ffe81f;
+      margin-bottom: 8px;
+    }
+
+    .project-desc {
+      font-size: 0.9rem;
+      color: #aaa;
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+
+    .project-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .tag {
+      font-size: 0.72rem;
+      padding: 3px 10px;
+      border-radius: 20px;
+      border: 1px solid rgba(79, 195, 247, 0.3);
+      color: #4fc3f7;
+      letter-spacing: 0.5px;
+    }
+
+    /* フッター */
+    footer {
+      text-align: center;
+      padding: 40px;
+      color: #333;
+      font-size: 0.8rem;
+      letter-spacing: 2px;
+    }
+
+    footer span {
+      color: #ffe81f;
+    }
+  </style>
+</head>
+<body>
+
+<canvas id="stars"></canvas>
+
+<div class="content">
+
+  <!-- ヒーロー -->
+  <div class="hero">
+    <p class="crawl-intro">A LONG TIME AGO IN A GALAXY FAR, FAR AWAY...</p>
+    <h1 class="hero-title">OKU-TYANN</h1>
+    <p class="hero-sub">Creator / Explorer / Builder</p>
+    <p class="scroll-hint">▼ SCROLL ▼</p>
+  </div>
+
+  <!-- プロジェクト -->
+  <div class="saber-divider">
+    <div class="saber-line"></div>
+    <div class="saber-dot"></div>
+    <div class="saber-line"></div>
+  </div>
+
+  <section>
+    <p class="section-label">// MISSIONS COMPLETED</p>
+    <h2 class="section-title">Projects</h2>
+
+    <div class="projects-grid">
+
+      <div class="project-card">
+        <span class="project-emoji">🎮</span>
+        <p class="project-name">JUMP TO GOAL</p>
+        <p class="project-desc">マリオ風の横スクロールジャンプゲーム。ギャップを越えてゴールを目指せ。Web Audio APIで効果音も実装。</p>
+        <div class="project-tags">
+          <span class="tag">HTML</span>
+          <span class="tag">Canvas 2D</span>
+          <span class="tag">Vanilla JS</span>
+        </div>
+      </div>
+
+      <div class="project-card">
+        <span class="project-emoji">🎬</span>
+        <p class="project-name">YouTubeようやくん</p>
+        <p class="project-desc">YouTubeのURLを貼るだけで動画を自動要約。3つのスタイル（ゼロから理解・実践・TL;DR）で使い分けられる。</p>
+        <div class="project-tags">
+          <span class="tag">Python</span>
+          <span class="tag">Flask</span>
+          <span class="tag">Groq API</span>
+          <span class="tag">Llama 3.3</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <div class="saber-divider">
+    <div class="saber-line"></div>
+    <div class="saber-dot"></div>
+    <div class="saber-line"></div>
+  </div>
+
+  <footer>
+    <p>© 2026 <span>OKU-TYANN</span> · Built with Claude Code · May the Force be with you.</p>
+  </footer>
+
+</div>
+
+<script>
+  // 星を生成
+  const canvas = document.getElementById('stars');
+  const ctx = canvas.getContext('2d');
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    drawStars();
+  }
+
+  function drawStars() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < 250; i++) {
+      const x = Math.random() * canvas.width;
+      const y = Math.random() * canvas.height;
+      const r = Math.random() * 1.5;
+      const opacity = Math.random() * 0.8 + 0.2;
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,255,${opacity})`;
+      ctx.fill();
+    }
+  }
+
+  window.addEventListener('resize', resize);
+  resize();
+</script>
+
+</body>
+</html>
