@@ -91,15 +91,16 @@
 
     .hero-egg {
       position: absolute;
-      bottom: -60px;
+      bottom: -80px;
       left: 50%;
       transform: translateX(-50%);
-      width: clamp(400px, 65vw, 800px);
+      width: 140vw;
+      max-width: none;
       opacity: 0;
       animation: fadeIn 2.5s ease 2s forwards;
       mix-blend-mode: lighten;
-      mask-image: radial-gradient(ellipse 55% 50% at 50% 60%, black 20%, transparent 75%);
-      -webkit-mask-image: radial-gradient(ellipse 55% 50% at 50% 60%, black 20%, transparent 75%);
+      mask-image: radial-gradient(ellipse 40% 45% at 50% 55%, black 15%, transparent 70%);
+      -webkit-mask-image: radial-gradient(ellipse 40% 45% at 50% 55%, black 15%, transparent 70%);
       pointer-events: none;
     }
 
