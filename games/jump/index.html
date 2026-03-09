@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Jump to Goal!</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0d0d1a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: monospace;
+    }
+    #hint {
+      color: #aaa;
+      font-size: 14px;
+      margin-bottom: 10px;
+      letter-spacing: 1px;
+    }
+    canvas {
+      display: block;
+      border: 3px solid #e94560;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div id="hint">← → 移動 ｜ スペース / ↑ ジャンプ ｜ R リトライ</div>
+  <canvas id="game" width="800" height="420"></canvas>
+
+  <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+
+    const W = canvas.width;
+    const H = canvas.height;
+    const GRAVITY = 0.55;
+    const JUMP_FORCE = -13;
+    const SPEED = 4;
+    const LEVEL_W = 3200;
+
+    // ---- レベルデータ ----
+    const platforms = [
+      // スタートエリア
+      { x: 0,    y: 370, w: 450, h: 50, color: '#1a3a5c' },
+      // 最初のギャップ → 足場
+      { x: 510,  y: 340, w: 120, h: 20, color: '#1a3a5c' },
+      { x: 690,  y: 300, w: 120, h: 20, color: '#1a3a5c' },
+      // 第二エリア
+      { x: 870,  y: 370, w: 350, h: 50, color: '#1a3a5c' },
+      // 上段足場（ショートカット）
+      { x: 950,  y: 260, w: 100, h: 20, color: '#2a4a6c' },
+      { x: 1100, y: 210, w: 100, h: 20, color: '#2a4a6c' },
+      // 第三エリア
+      { x: 1280, y: 370, w: 300, h: 50, color: '#1a3a5c' },
+      { x: 1380, y: 270, w: 90,  h: 20, color: '#1a3a5c' },
+      // 連続ジャンプゾーン
+      { x: 1650, y: 350, w: 80,  h: 20, color: '#1a3a5c' },
+      { x: 1790, y: 310, w: 80,  h: 20, color: '#1a3a5c' },
+      { x: 1930, y: 270, w: 80,  h: 20, color: '#1a3a5c' },
+      { x: 2060, y: 310, w: 80,  h: 20, color: '#1a3a5c' },
+      // 最終エリア
+      { x: 2200, y: 370, w: 1000, h: 50, color: '#1a3a5c' },
+      { x: 2300, y: 260, w: 120, h: 20, color: '#2a4a6c' },
+      { x: 2500, y: 220, w: 120, h: 20, color: '#2a4a6c' },
+    ];
+
+    const goal = { x: 3080, y: 270, poleH: 100 };
+
+    // ---- プレイヤー ----
+    const player = {
+      x: 80, y: 310,
+      w: 32, h: 42,
+      vx: 0, vy: 0,
+      onGround: false,
+      facingRight: true,
+    };
+
+    const startX = player.x;
+    const startY = player.y;
+
+    let camera = { x: 0 };
+    let state = 'playing'; // 'playing' | 'clear'
+    let jumpPressed = false;
+    const keys = {};
+
+    // ---- 効果音（Web Audio API） ----
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playJumpSound() {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      osc.type = 'square';
+      const now = audioCtx.currentTime;
+      // 周波数を一気に上げる（ピコッ！な感じ）
+      osc.frequency.setValueAtTime(180, now);
+      osc.frequency.exponentialRampToValueAtTime(520, now + 0.08);
+      osc.frequency.exponentialRampToValueAtTime(320, now + 0.18);
+
+      gain.gain.setValueAtTime(0.18, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+
+      osc.start(now);
+      osc.stop(now + 0.2);
+    }
+
+    document.addEventListener('keydown', e => {
+      keys[e.code] = true;
+      if (e.code === 'KeyR') resetGame();
+      if ((e.code === 'Space' || e.code === 'ArrowUp') && !jumpPressed) {
+        if (player.onGround) {
+          player.vy = JUMP_FORCE;
+          player.onGround = false;
+          playJumpSound();
+        }
+        jumpPressed = true;
+      }
+    });
+    document.addEventListener('keyup', e => {
+      keys[e.code] = false;
+      if (e.code === 'Space' || e.code === 'ArrowUp') jumpPressed = false;
+    });
+
+    function resetGame() {
+      player.x = startX; player.y = startY;
+      player.vx = 0; player.vy = 0;
+      player.onGround = false;
+      camera.x = 0;
+      state = 'playing';
+    }
+
+    // ---- AABB 衝突 ----
+    function collide(p) {
+      return (
+        player.x + player.w > p.x &&
+        player.x < p.x + p.w &&
+        player.y + player.h > p.y &&
+        player.y + player.h <= p.y + p.h
+      );
+    }
+
+    // ---- 更新 ----
+    function update() {
+      if (state !== 'playing') return;
+
+      // 横移動
+      if (keys['ArrowLeft'] || keys['KeyA']) {
+        player.vx = -SPEED;
+        player.facingRight = false;
+      } else if (keys['ArrowRight'] || keys['KeyD']) {
+        player.vx = SPEED;
+        player.facingRight = true;
+      } else {
+        player.vx = 0;
+      }
+
+      // 重力
+      player.vy += GRAVITY;
+
+      // 移動
+      player.x += player.vx;
+      player.y += player.vy;
+
+      // 境界
+      if (player.x < 0) player.x = 0;
+
+      // 足場との衝突（落下中のみ）
+      player.onGround = false;
+      for (const p of platforms) {
+        if (
+          player.x + player.w > p.x &&
+          player.x < p.x + p.w &&
+          player.y + player.h > p.y &&
+          player.y + player.h < p.y + p.h + Math.abs(player.vy) + 1 &&
+          player.vy >= 0
+        ) {
+          player.y = p.y - player.h;
+          player.vy = 0;
+          player.onGround = true;
+        }
+      }
+
+      // 落下死
+      if (player.y > H + 100) {
+        player.x = startX; player.y = startY;
+        player.vx = 0; player.vy = 0;
+        camera.x = 0;
+      }
+
+      // ゴール判定
+      if (
+        player.x + player.w > goal.x &&
+        player.x < goal.x + 20 &&
+        player.y + player.h > goal.y &&
+        player.y < goal.y + goal.poleH
+      ) {
+        state = 'clear';
+      }
+
+      // カメラ
+      const targetX = player.x - W / 2 + player.w / 2;
+      camera.x += (targetX - camera.x) * 0.12;
+      camera.x = Math.max(0, Math.min(camera.x, LEVEL_W - W));
+    }
+
+    // ---- 描画ヘルパー ----
+    function drawRoundRect(x, y, w, h, r, fill) {
+      ctx.fillStyle = fill;
+      ctx.beginPath();
+      ctx.roundRect(x, y, w, h, r);
+      ctx.fill();
+    }
+
+    // ---- 描画 ----
+    function draw() {
+      // 空
+      const sky = ctx.createLinearGradient(0, 0, 0, H);
+      sky.addColorStop(0, '#0d0d2e');
+      sky.addColorStop(1, '#0d1a3a');
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, W, H);
+
+      // 星
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      for (let i = 0; i < 60; i++) {
+        const sx = ((i * 137 + 50) % LEVEL_W - camera.x * 0.2) % W;
+        const sy = (i * 73 + 20) % (H * 0.6);
+        if (sx > 0 && sx < W) ctx.fillRect(sx, sy, 1.5, 1.5);
+      }
+
+      ctx.save();
+      ctx.translate(-Math.floor(camera.x), 0);
+
+      // 足場
+      for (const p of platforms) {
+        // 影
+        ctx.fillStyle = 'rgba(0,0,0,0.3)';
+        ctx.fillRect(p.x + 4, p.y + 4, p.w, p.h);
+        // 本体
+        drawRoundRect(p.x, p.y, p.w, p.h, 4, p.color);
+        // 上面ハイライト
+        ctx.fillStyle = 'rgba(255,255,255,0.08)';
+        ctx.fillRect(p.x + 4, p.y + 2, p.w - 8, 4);
+        // レンガ模様
+        ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+        ctx.lineWidth = 1;
+        for (let bx = p.x; bx < p.x + p.w; bx += 40) {
+          ctx.beginPath();
+          ctx.moveTo(bx, p.y);
+          ctx.lineTo(bx, p.y + p.h);
+          ctx.stroke();
+        }
+      }
+
+      // ゴールフラッグ
+      const gx = goal.x;
+      const gy = goal.y;
+      // ポール
+      ctx.fillStyle = '#ccc';
+      ctx.fillRect(gx + 8, gy, 4, goal.poleH);
+      // 旗（ひらひら演出）
+      const wave = Math.sin(Date.now() / 200) * 4;
+      ctx.fillStyle = '#e94560';
+      ctx.beginPath();
+      ctx.moveTo(gx + 12, gy + 2);
+      ctx.quadraticCurveTo(gx + 36 + wave, gy + 14, gx + 12, gy + 28);
+      ctx.closePath();
+      ctx.fill();
+      // 台座
+      ctx.fillStyle = '#888';
+      ctx.fillRect(gx, gy + goal.poleH - 8, 20, 8);
+
+      // ---- プレイヤー描画 ----
+      const px = Math.floor(player.x);
+      const py = Math.floor(player.y);
+      const pw = player.w;
+      const ph = player.h;
+      const flip = player.facingRight ? 1 : -1;
+
+      ctx.save();
+      ctx.translate(px + pw / 2, py + ph / 2);
+      ctx.scale(flip, 1);
+      ctx.translate(-pw / 2, -ph / 2);
+
+      // ボディ
+      ctx.fillStyle = '#e94560';
+      ctx.fillRect(2, 14, pw - 4, ph - 14);
+
+      // 帽子
+      ctx.fillStyle = '#e94560';
+      ctx.fillRect(0, 4, pw, 12);
+      ctx.fillRect(4, 0, pw - 4, 8);
+
+      // 顔（明るめ）
+      ctx.fillStyle = '#f4a57b';
+      ctx.fillRect(3, 10, pw - 6, 16);
+
+      // 目
+      ctx.fillStyle = '#1a1a2e';
+      ctx.fillRect(7, 13, 5, 5);
+      ctx.fillRect(19, 13, 5, 5);
+      // 白目ハイライト
+      ctx.fillStyle = 'white';
+      ctx.fillRect(8, 13, 2, 2);
+      ctx.fillRect(20, 13, 2, 2);
+
+      // 口（ジャンプ中は丸く）
+      if (!player.onGround) {
+        ctx.fillStyle = '#1a1a2e';
+        ctx.beginPath();
+        ctx.arc(pw / 2, 22, 3, 0, Math.PI * 2);
+        ctx.fill();
+      } else {
+        ctx.strokeStyle = '#1a1a2e';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(pw / 2, 20, 5, 0, Math.PI);
+        ctx.stroke();
+      }
+
+      // ズボン
+      ctx.fillStyle = '#1a3a8c';
+      ctx.fillRect(2, ph - 14, pw - 4, 14);
+
+      // ボタン
+      ctx.fillStyle = '#f4a57b';
+      ctx.fillRect(pw / 2 - 2, ph - 16, 4, 4);
+
+      ctx.restore();
+      ctx.restore();
+
+      // ---- UI ----
+      if (state === 'clear') {
+        ctx.fillStyle = 'rgba(0,0,0,0.65)';
+        ctx.fillRect(0, 0, W, H);
+
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#e94560';
+        ctx.font = 'bold 72px monospace';
+        ctx.fillText('GOAL!', W / 2, H / 2 - 20);
+
+        ctx.fillStyle = 'white';
+        ctx.font = '22px monospace';
+        ctx.fillText('R キーでもう一回！', W / 2, H / 2 + 30);
+      }
+
+      // 距離メーター
+      const pct = Math.min(1, (player.x - 80) / (goal.x - 80));
+      ctx.fillStyle = 'rgba(255,255,255,0.1)';
+      ctx.fillRect(20, 10, W - 40, 8);
+      ctx.fillStyle = '#e94560';
+      ctx.fillRect(20, 10, (W - 40) * pct, 8);
+      ctx.fillStyle = 'white';
+      ctx.font = '11px monospace';
+      ctx.textAlign = 'right';
+      ctx.fillText('GOAL', W - 18, 17);
+      ctx.textAlign = 'left';
+      ctx.fillText('START', 20, 17);
+    }
+
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    loop();
+  </script>
+</body>
+</html>

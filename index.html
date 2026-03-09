@@ -218,6 +218,31 @@
       letter-spacing: 0.5px;
     }
 
+    .project-link {
+      display: inline-block;
+      margin-top: 16px;
+      padding: 8px 18px;
+      border-radius: 6px;
+      border: 1px solid #ffe81f;
+      color: #ffe81f;
+      font-size: 0.82rem;
+      text-decoration: none;
+      letter-spacing: 1px;
+      transition: all 0.2s;
+    }
+
+    .project-link:hover {
+      background: #ffe81f;
+      color: #000;
+    }
+
+    .project-link.disabled {
+      border-color: #444;
+      color: #555;
+      cursor: default;
+      pointer-events: none;
+    }
+
     /* フッター */
     footer {
       text-align: center;
@@ -268,6 +293,7 @@
           <span class="tag">Canvas 2D</span>
           <span class="tag">Vanilla JS</span>
         </div>
+        <a class="project-link" href="./games/jump/" target="_blank">▶ PLAY</a>
       </div>
 
       <div class="project-card">
@@ -280,6 +306,7 @@
           <span class="tag">Groq API</span>
           <span class="tag">Llama 3.3</span>
         </div>
+        <a class="project-link disabled" href="#">⚙ LOCAL TOOL</a>
       </div>
 
     </div>
