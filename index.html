@@ -89,19 +89,25 @@
       animation: fadeIn 1.5s ease 1.6s forwards;
     }
 
+    .egg-section {
+      width: 100%;
+      overflow: hidden;
+      line-height: 0;
+      margin: -20px 0;
+    }
+
     .hero-egg {
-      position: absolute;
-      bottom: -80px;
-      left: 50%;
-      transform: translateX(-50%);
+      display: block;
       width: 140vw;
       max-width: none;
-      opacity: 0;
-      animation: fadeIn 2.5s ease 2s forwards;
+      margin-left: 50%;
+      transform: translateX(-50%);
       mix-blend-mode: lighten;
-      mask-image: radial-gradient(ellipse 40% 45% at 50% 55%, black 15%, transparent 70%);
-      -webkit-mask-image: radial-gradient(ellipse 40% 45% at 50% 55%, black 15%, transparent 70%);
+      mask-image: radial-gradient(ellipse 42% 48% at 50% 50%, black 10%, transparent 68%);
+      -webkit-mask-image: radial-gradient(ellipse 42% 48% at 50% 50%, black 10%, transparent 68%);
       pointer-events: none;
+      opacity: 0;
+      animation: fadeIn 2.5s ease 0.5s forwards;
     }
 
     .scroll-hint {
@@ -312,6 +318,9 @@
     <h1 class="hero-title">OKU-TYANN</h1>
     <p class="hero-sub">Creator · Explorer · Builder</p>
     <p class="scroll-hint">▼ &nbsp; SCROLL &nbsp; ▼</p>
+  </div>
+
+  <div class="egg-section">
     <img class="hero-egg" src="./egg.png" alt="" />
   </div>
 
