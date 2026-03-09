@@ -91,14 +91,15 @@
 
     .hero-egg {
       position: absolute;
-      bottom: 0;
+      bottom: -60px;
       left: 50%;
       transform: translateX(-50%);
-      width: clamp(300px, 50vw, 650px);
+      width: clamp(400px, 65vw, 800px);
       opacity: 0;
-      animation: fadeIn 2s ease 2s forwards;
-      mask-image: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.9) 30%, rgba(0,0,0,0.3) 70%, transparent 100%);
-      -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.9) 30%, rgba(0,0,0,0.3) 70%, transparent 100%);
+      animation: fadeIn 2.5s ease 2s forwards;
+      mix-blend-mode: lighten;
+      mask-image: radial-gradient(ellipse 55% 50% at 50% 60%, black 20%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse 55% 50% at 50% 60%, black 20%, transparent 75%);
       pointer-events: none;
     }
 
